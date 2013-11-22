@@ -28,8 +28,8 @@ if len(sys.argv) != 3:
 sql_file_path = sys.argv[1]
 out_file_path = sys.argv[2]
 
-sql_file = open(sql_file_path, 'r');
-out_file = open(out_file_path + '.tmp', 'w');
+sql_file = open(sql_file_path, 'r')
+out_file = open(out_file_path + '.tmp', 'w')
 
 # Read up until the first INSERT statement
 # This is so we can skip all of the usual MySQL dump comments and create table
@@ -38,27 +38,36 @@ while True:
     if sql_file.readline(6).startswith('INSERT'):
         break
 
-progress = 1;
+progress = 0
 
 # The dump is blocked into may insert statments, read each insert statment in
 # one by one and handle parsing out the inserts
 for line in sql_file:
+    data_start = line.find('(')
 
-    # Remove the 'ISERT INTO ... VALUES ' prefix and trailing ');\n'
-    line = line[line.index('(') + 1:-3]
+    # Skip if we have no data on this line
+    if data_start == -1: continue
+
+    # Remove the 'INSERT INTO ... VALUES ' prefix and trailing ');\n'
+    line = line[data_start + 1:-3]
 
     # Split pages into array
     for page in line.split('),('):
 
-        # Convert the string into a tuple
-        page_tuple = ast.literal_eval('(' + page + ')')
+        # Get the offset to the end of the page_id
+        page_id_end = page.index(',')
 
         # The second column is the 'page_namespace'. Ignore anything not in the
-        # 0 namespace
-        if page_tuple[1] != 0: continue
+        # 0 namespace. The database stores this as a integer so there will be no
+        # numbers formated like '02' so it's safe to look at the first character
+        if page[page_id_end + 1] != '0': continue
+
+        # Get the offsets for the page name. The data has no escaped semi colins in t
+        page_name_start = page.index(',\'', page_id_end + 1) + 2
+        page_name_end   = page.index('\',\'', page_name_start + 1)
 
         # Write out the page id and page title separated by a single comma
-        print("{},{}".format(page_tuple[0], page_tuple[2]), file=out_file)
+        print("{},{}".format(page[:page_id_end], page[page_name_start:page_name_end]), file=out_file)
 
     progress += 1
     print("\rRead INSERT statment {}".format(progress), end='')
