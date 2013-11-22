@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # This script accepts two arguments:
 #
@@ -7,9 +7,9 @@
 #
 # The output file will be in the following format
 #
-# page_id, page_title
-# page_id, page_title
-# page_id, page_title
+# page_id,page_title
+# page_id,page_title
+# page_id,page_title
 # ...
 #
 # We will be ignoring all pages not in the 0 namespace. This is the 'Main'
@@ -18,4 +18,47 @@
 #
 # See here http://www.mediawiki.org/wiki/Manual:Namespace#Built-in_namespaces
 
+import sys
+import ast
 
+if len(sys.argv) != 3:
+    print("Must pass two arguments")
+    exit()
+
+sql_file_path = sys.argv[1]
+out_file_path = sys.argv[2]
+
+sql_file = open(sql_file_path, 'r');
+out_file = open(out_file_path + '.tmp', 'w');
+
+# Read up until the first INSERT statement
+# This is so we can skip all of the usual MySQL dump comments and create table
+# garbage that we don't care about
+while True:
+    if sql_file.readline(6).startswith('INSERT'):
+        break
+
+progress = 1;
+
+# The dump is blocked into may insert statments, read each insert statment in
+# one by one and handle parsing out the inserts
+for line in sql_file:
+
+    # Remove the 'ISERT INTO ... VALUES ' prefix and trailing ');\n'
+    line = line[line.index('(') + 1:-3]
+
+    # Split pages into array
+    for page in line.split('),('):
+
+        # Convert the string into a tuple
+        page_tuple = ast.literal_eval('(' + page + ')')
+
+        # The second column is the 'page_namespace'. Ignore anything not in the
+        # 0 namespace
+        if page_tuple[1] != 0: continue
+
+        # Write out the page id and page title separated by a single comma
+        print("{},{}".format(page_tuple[0], page_tuple[2]), file=out_file)
+
+    print("Read INSERT statment {}".format(progress))
+    progress += 1
