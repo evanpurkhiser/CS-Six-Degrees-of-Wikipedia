@@ -60,5 +60,6 @@ for line in sql_file:
         # Write out the page id and page title separated by a single comma
         print("{},{}".format(page_tuple[0], page_tuple[2]), file=out_file)
 
-    print("Read INSERT statment {}".format(progress))
     progress += 1
+    print("\rRead INSERT statment {}".format(progress), end='')
+    sys.stdout.flush()
