@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <unordered_map>
+#include <ctime>
 
 int main(int argc, char* argv[])
 {
@@ -19,6 +20,8 @@ int main(int argc, char* argv[])
 	std::unordered_map<std::string, int> page_ids;
 
 	{
+		std::clock_t start = std::clock();
+
 		std::ifstream page_titles_file(argv[1]);
 		std::string page_name;
 
@@ -36,8 +39,10 @@ int main(int argc, char* argv[])
 			page_ids[page_name] = index++;
 		}
 		std::cout << "\033[94m  -> \033[0mRead in " << index - 1 << " page titles\n";
-	}
 
+		double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
+		std::cout << "\033[94m  -> \033[0mtook " << duration << " seconds\n";
+	}
 
 	return 0;
 }
