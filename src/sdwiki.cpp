@@ -259,36 +259,67 @@ int main(int argc, char* argv[])
 		gettimeofday(&end, 0);
 
 		double duration = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
-		std::cout << "\033[94m  -> \033[0mRead in " << total    << " page links\n";
-		std::cout << "\033[94m  -> \033[0mTook "    << duration << " seconds\n";
+		std::cout << "\033[34m  -> \033[0mRead in " << total    << " page links\n";
+		std::cout << "\033[34m  -> \033[0mTook "    << duration << " seconds\n";
 	}
 
-	std::cout << "\033[92m==>\033[0m Beginning BFS on Wikipedia graph\n";
+	std::cout << "\033[32m==>\033[0m Wikipedia graph loaded! Ready to path find!\n\n";
 
-	// Get the ID's of the start and target nodes
-	int start_id  = page_ids[argv[3]],
-	    target_id = page_ids[argv[4]];
-
-	if (start_id == target_id)
+	while (true)
 	{
-		std::cout << "\n\033[92mNo clicks required. The page is the same!\n";
-	}
+		std::string start_page, target_page;
 
-	std::vector<int> target_path;
+		std::cout << "Start Wikipedia Page: ";
+		std::getline(std::cin, start_page);
 
-	struct timeval start, end;
+		std::cout << "Target Wikipedia Page: ";
+		std::getline(std::cin, target_page);
 
-	gettimeofday(&start, 0);
-	target_path = path_between_pages(page_links, start_id, target_id);
-	gettimeofday(&end, 0);
+		// Use the the wiki_search.py script to lookup the wikipedia article name
+		start_page  = search_for_page(base_path + "bin/wiki_search.py", start_page);
+		target_page = search_for_page(base_path + "bin/wiki_search.py", target_page);
 
-	double duration = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
-	std::cout << "\033[94m  -> \033[0mTook "    << duration << " seconds\n\n";
+		// Remove newline from page names
+		start_page.pop_back();
+		target_page.pop_back();
 
-	// Print out the path between the pages
-	for (int page_id : target_path)
-	{
-		std::cout << " * " << pages[page_id] << '\n';
+		// Locate page Ids
+		int start_id  = page_ids[start_page],
+			target_id = page_ids[target_page];
+
+		// Ensure both pages exist
+		if ( ! start_id)
+		{
+			std::cout << "Start page is not a valid Wikipedia page";
+			continue;
+		}
+
+		if ( ! target_id)
+		{
+			std::cout << "Start page is not a valid Wikipedia page";
+			continue;
+		}
+
+		// Begin search
+		std::cout << "\n\033[32m==>\033[0m Finding path from \033[35m"
+		          << start_page  << "\033[0m → \033[34m"
+		          << target_page << "\033[0m\n";
+
+		std::vector<int> target_path;
+		struct timeval start, end;
+
+		gettimeofday(&start, 0);
+		target_path = path_between_pages(page_links, start_id, target_id);
+		gettimeofday(&end, 0);
+
+		double duration = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
+		std::cout << "\033[34m  -> \033[0mTook "    << duration << " seconds\n\n";
+
+		// Print out the path between the pages
+		for (int page_id : target_path)
+		{
+			std::cout << " * " << pages[page_id] << '\n';
+		}
 	}
 
 	return 0;
