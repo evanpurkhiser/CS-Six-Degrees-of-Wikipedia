@@ -182,6 +182,28 @@ std::vector<int> path_between_pages(page_links_t &page_links,
 	return path_from_parents(parent_links, target_id);
 }
 
+/* Use the external python searcher script to find a given page by a search term
+ * and output the resulting page name.
+ *
+ * Returns: Valid Wikipedia page name, or an empty string if one cannot be found
+ */
+std::string search_for_page(const std::string &py_searcher_bin, const std::string &search)
+{
+	FILE *pipe = popen((py_searcher_bin + " \"" + search + "\"").c_str(), "r");
+
+	char buffer[255];
+	std::string page_name = "";
+
+	while ( ! feof(pipe))
+	{
+		if (fgets(buffer, 255, pipe) != NULL)
+		{
+			page_name += buffer;
+		}
+	}
+
+	return page_name;
+}
 
 int main(int argc, char* argv[])
 {
