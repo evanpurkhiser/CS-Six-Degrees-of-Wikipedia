@@ -130,36 +130,53 @@ std::vector<int> path_between_pages(page_links_t &page_links,
 	std::deque<int> current_nodes;
 	current_nodes.push_back(start_id);
 
+	bool found_target = false;
+
 	// Search until we find our target node
-	while ( ! current_nodes.empty())
+	while ( ! found_target && ! current_nodes.empty())
 	{
 		int available_nodes = current_nodes.size();
 
+		#pragma omp parallel for
 		for (int i = 0; i < available_nodes; ++i)
 		{
-			int current = current_nodes.front();
-			current_nodes.pop_front();
+			// Since we can't break out of parallelize loops we just need to
+			// finish off what evers left by continuing through them all
+			#pragma omp flush (found_target)
+			if (found_target) continue;
+
+			int current;
+
+			#pragma omp critical
+			{
+				current = current_nodes.front();
+				current_nodes.pop_front();
+			}
 
 			// Iterate through all linked pages
 			for (int page_id : page_links[current])
 			{
-				// Ignore already found nodes
-				if (parent_links[page_id] != 0) continue;
-
 				// Keep track of how we traveled to this node
-				parent_links[page_id] = current;
-
-				if (target_id == page_id)
+				#pragma omp critical
+				if (parent_links[page_id] == 0)
 				{
-					return path_from_parents(parent_links, target_id);
-				}
+					parent_links[page_id] = current;
 
-				current_nodes.push_back(page_id);
+					if (target_id == page_id)
+					{
+						found_target = true;
+						#pragma omp flush (found_target)
+					}
+					else
+					{
+						current_nodes.push_back(page_id);
+					}
+				}
 			}
 		}
 	}
 
-	return std::vector<int>();
+	return path_from_parents(parent_links, target_id);
 }
 
 
