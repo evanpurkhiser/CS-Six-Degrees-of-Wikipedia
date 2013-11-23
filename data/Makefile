@@ -1,3 +1,4 @@
+.PHONY: all
 all: titles-sorted links-simple-sorted
 
 %:
