@@ -88,20 +88,24 @@ int load_page_links(const std::string &file_path, page_links_t &page_links)
  * Returns: A vector containing the page ids of the path in order.
  */
 std::vector<int> path_from_parents(std::unordered_map<int, int> &parent_links,
-	int tail_id)
+	int target_id)
 {
+	int current = target_id;
 	std::vector<int> target_path;
-	int current = tail_id;
 
-	// Traverse thrugh the parent_links till we reach the root node
-	do
+	// Only fill the target_path vector if we have a parent link chain
+	if (parent_links[target_id])
 	{
-		target_path.push_back(current);
-	}
-	while ((current = parent_links[current]) != -1);
+		// Traverse thrugh the parent_links till we reach the root node
+		do
+		{
+			target_path.push_back(current);
+		}
+		while ((current = parent_links[current]) != -1);
 
-	// Reverse the target path list to be in proper order
-	std::reverse(target_path.begin(), target_path.end());
+		// Reverse the target path list to be in proper order
+		std::reverse(target_path.begin(), target_path.end());
+	}
 
 	return target_path;
 }
