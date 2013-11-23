@@ -45,4 +45,8 @@ data_path  = os.path.join(root_dir, 'data')
 #  2. The path to the page-links data
 #  3. The start wiki article
 #  4. The target wiki article
-
+subprocess.call([executable,
+         os.path.join(data_path, 'titles-sorted'),
+         os.path.join(data_path, 'links-simple-sorted'),
+         start_title,
+         target_title]);
