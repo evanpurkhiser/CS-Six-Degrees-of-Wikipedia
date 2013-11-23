@@ -1,5 +1,9 @@
 #include <stdio.h>
+#include <unistd.h>
+#include <libgen.h>
 #include <sys/time.h>
+#include <omp.h>
+
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -7,7 +11,6 @@
 #include <deque>
 #include <unordered_map>
 #include <algorithm>
-#include <omp.h>
 
 // Typedef for our primary data types
 typedef std::vector<std::string> pages_t;
@@ -182,12 +185,6 @@ std::vector<int> path_between_pages(page_links_t &page_links,
 
 int main(int argc, char* argv[])
 {
-	if (argc != 5)
-	{
-		std::cerr << "Path Finder only accepts 4 arguments\n";
-		exit(1);
-	}
-
 	// Used to store a list of page titles. Each index represents a page title
 	pages_t pages;
 
@@ -197,6 +194,14 @@ int main(int argc, char* argv[])
 	// Used to store a list of page_ids that a given page_id links to
 	page_links_t page_links;
 
+	std::cout << "Welcome to Six-Degrees-of-Wikipedia path finder\n"
+	          << "Please while we load Wikipedia into memory.\n\n";
+
+	// Determine the base directory path
+	char path_buffer[1024];
+	readlink("/proc/self/exe", path_buffer, sizeof(path_buffer) - 1);
+	std::string base_path = std::string(dirname(path_buffer)) + "/../";
+
 	// Load in all page titles into a vector
 	std::cout << "\033[92m==>\033[0m Reading in page titles as a vector & map\n";
 
@@ -204,7 +209,7 @@ int main(int argc, char* argv[])
 		struct timeval start, end;
 
 		gettimeofday(&start, 0);
-		int total = load_page_titles(std::string(argv[1]), pages, page_ids);
+		int total = load_page_titles(base_path + "data/titles-sorted", pages, page_ids);
 		gettimeofday(&end, 0);
 
 		double duration = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
@@ -219,7 +224,7 @@ int main(int argc, char* argv[])
 		struct timeval start, end;
 
 		gettimeofday(&start, 0);
-		int total = load_page_links(std::string(argv[2]), page_links);
+		int total = load_page_links(base_path + "data/links-simple-sorted", page_links);
 		gettimeofday(&end, 0);
 
 		double duration = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
