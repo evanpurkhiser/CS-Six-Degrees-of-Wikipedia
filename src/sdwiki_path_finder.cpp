@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 
 		// We won't be using the first index of the vector for anything since
 		// the page_id indexes start at 1 instead of 0. This should help to
-		// prevent any errors during devlopment
+		// prevent any errors during development
 		pages.push_back("");
 
 		// Read the page name into the vector and into the hash-map
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 		std::cout << "\033[94m  -> \033[0mRead in " << index - 1 << " page titles\n";
 
 		double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
-		std::cout << "\033[94m  -> \033[0mtook " << duration << " seconds\n";
+		std::cout << "\033[94m  -> \033[0mTook " << duration << " seconds\n";
 	}
 
 	// Load in all page links into a hash map
@@ -71,10 +71,10 @@ int main(int argc, char* argv[])
 		}
 
 		double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
-		std::cout << "\033[94m  -> \033[0mtook " << duration << " seconds\n";
+		std::cout << "\033[94m  -> \033[0mTook " << duration << " seconds\n";
 	}
 
-	std::cout << "\033[92m==>\033[0m Begining BFS on Wikipedia graph\n";
+	std::cout << "\033[92m==>\033[0m Beginning BFS on Wikipedia graph\n";
 
 	// Get the ID's of the start and target nodes
 	int start_id  = page_ids[argv[3]],
@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
 
 	if (start_id == target_id)
 	{
-		std::cout << "\n\033[92mNo clicks required. The article is the same!\n";
+		std::cout << "\n\033[92mNo clicks required. The page is the same!\n";
 	}
 
 	return 0;
