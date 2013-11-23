@@ -234,7 +234,7 @@ int main(int argc, char* argv[])
 	std::string base_path = std::string(dirname(path_buffer)) + "/../";
 
 	// Load in all page titles into a vector
-	std::cout << "\033[92m==>\033[0m Reading in page titles as a vector & map\n";
+	std::cout << "\033[32m==>\033[0m Reading in page titles as a vector & map\n";
 
 	{
 		struct timeval start, end;
@@ -244,12 +244,12 @@ int main(int argc, char* argv[])
 		gettimeofday(&end, 0);
 
 		double duration = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
-		std::cout << "\033[94m  -> \033[0mRead in " << total    << " page titles\n";
-		std::cout << "\033[94m  -> \033[0mTook "    << duration << " seconds\n";
+		std::cout << "\033[34m  -> \033[0mRead in " << total    << " page titles\n";
+		std::cout << "\033[34m  -> \033[0mTook "    << duration << " seconds\n";
 	}
 
 	// Load in all page links into a hash map
-	std::cout << "\033[92m==>\033[0m Reading in page links as a map\n";
+	std::cout << "\033[32m==>\033[0m Reading in page links as a map\n";
 
 	{
 		struct timeval start, end;
