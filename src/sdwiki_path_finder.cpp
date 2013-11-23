@@ -3,8 +3,11 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
+#include <deque>
 #include <unordered_map>
+#include <algorithm>
 #include <ctime>
+#include <omp.h>
 
 int main(int argc, char* argv[])
 {
@@ -85,6 +88,53 @@ int main(int argc, char* argv[])
 		std::cout << "\n\033[92mNo clicks required. The page is the same!\n";
 	}
 
+	// Keep track of parent nodes so we can traverse back through the path
+	std::unordered_map<int, int> parent_links;
+
+	// The starting node will always be considered 'visited'
+	parent_links[start_id] = -1;
+
+	{
+		std::clock_t start = std::clock();
+
+		// Queue of the current nodes to look at
+		std::deque<int> current_nodes;
+		current_nodes.push_back(start_id);
+
+		// Search until we find our target node
+		while ( ! current_nodes.empty())
+		{
+			int available_nodes = current_nodes.size();
+
+			for (int i = 0; i < available_nodes; ++i)
+			{
+				int current = current_nodes.front();
+				current_nodes.pop_front();
+
+				// Iterate through all linked pages
+				for (int page_id : page_links[current])
+				{
+					// Ignore already found nodes
+					if (parent_links[page_id] != 0) continue;
+
+					// Keep track of how we traveled to this node
+					parent_links[page_id] = current;
+
+					if (target_id == page_id)
+					{
+						current_nodes.clear();
+						available_nodes = 0;
+						break;
+					}
+
+					current_nodes.push_back(page_id);
+				}
+			}
+		}
+
+		double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
+		std::cout << "\033[94m  -> \033[0mFound path in " << duration << " seconds\n";
+	}
+
 	return 0;
 }
-
