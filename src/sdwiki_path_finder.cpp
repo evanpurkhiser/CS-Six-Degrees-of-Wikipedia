@@ -79,7 +79,84 @@ int load_page_links(const std::string &file_path, page_links_t &page_links)
 	return total_links;
 }
 
+/* Given a hash map containing page_ids that represent a path back to a given
+ * root node extract those Ids and order them so that we move from the root node
+ * back to the tail_id.
+ *
+ * The root node is the node whos parent value is -1.
+ *
+ * Returns: A vector containing the page ids of the path in order.
+ */
+std::vector<int> path_from_parents(std::unordered_map<int, int> &parent_links,
+	int tail_id)
+{
+	std::vector<int> target_path;
+	int current = tail_id;
 
+	// Traverse thrugh the parent_links till we reach the root node
+	do
+	{
+		target_path.push_back(current);
+	}
+	while ((current = parent_links[current]) != -1);
+
+	// Reverse the target path list to be in proper order
+	std::reverse(target_path.begin(), target_path.end());
+
+	return target_path;
+}
+
+/* Calculate the shortest path between two page_ids in the page links graph.
+ * This uses the Depth First Search algorithm to travers through each of the
+ * child nodes looking to see if they are the target id. If none are, then we
+ * will traverse through all their children, up until we can find the target id.
+ *
+ * Returns: See the return value of `path_from_parents`.
+ */
+std::vector<int> path_between_pages(page_links_t &page_links,
+	int start_id, int target_id)
+{
+	// Keep track of parent nodes so we can traverse back through the path
+	std::unordered_map<int, int> parent_links;
+
+	// The starting node will always be considered 'visited'
+	parent_links[start_id] = -1;
+
+	// Queue of the current nodes to look at
+	std::deque<int> current_nodes;
+	current_nodes.push_back(start_id);
+
+	// Search until we find our target node
+	while ( ! current_nodes.empty())
+	{
+		int available_nodes = current_nodes.size();
+
+		for (int i = 0; i < available_nodes; ++i)
+		{
+			int current = current_nodes.front();
+			current_nodes.pop_front();
+
+			// Iterate through all linked pages
+			for (int page_id : page_links[current])
+			{
+				// Ignore already found nodes
+				if (parent_links[page_id] != 0) continue;
+
+				// Keep track of how we traveled to this node
+				parent_links[page_id] = current;
+
+				if (target_id == page_id)
+				{
+					return path_from_parents(parent_links, target_id);
+				}
+
+				current_nodes.push_back(page_id);
+			}
+		}
+	}
+
+	return std::vector<int>();
+}
 
 
 int main(int argc, char* argv[])
@@ -134,66 +211,13 @@ int main(int argc, char* argv[])
 		std::cout << "\n\033[92mNo clicks required. The page is the same!\n";
 	}
 
-	// Keep track of parent nodes so we can traverse back through the path
-	std::unordered_map<int, int> parent_links;
-
-	// The starting node will always be considered 'visited'
-	parent_links[start_id] = -1;
-
-	{
-		std::clock_t start = std::clock();
-
-		// Queue of the current nodes to look at
-		std::deque<int> current_nodes;
-		current_nodes.push_back(start_id);
-
-		// Search until we find our target node
-		while ( ! current_nodes.empty())
-		{
-			int available_nodes = current_nodes.size();
-
-			for (int i = 0; i < available_nodes; ++i)
-			{
-				int current = current_nodes.front();
-				current_nodes.pop_front();
-
-				// Iterate through all linked pages
-				for (int page_id : page_links[current])
-				{
-					// Ignore already found nodes
-					if (parent_links[page_id] != 0) continue;
-
-					// Keep track of how we traveled to this node
-					parent_links[page_id] = current;
-
-					if (target_id == page_id)
-					{
-						current_nodes.clear();
-						available_nodes = 0;
-						break;
-					}
-
-					current_nodes.push_back(page_id);
-				}
-			}
-		}
-
-		double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
-		std::cout << "\033[94m  -> \033[0mFound path in " << duration << " seconds\n";
-	}
-
-	// Insert the path between the start and target into a vector
 	std::vector<int> target_path;
-	int current = target_id;
 
-	do
-	{
-		target_path.push_back(current);
-	}
-	while ((current = parent_links[current]) != -1);
+	std::clock_t start = std::clock();
+	target_path = path_between_pages(page_links, start_id, target_id);
+	double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
 
-	// Reverse the target path list to be in proper order
-	std::reverse(target_path.begin(), target_path.end());
+	std::cout << "\033[94m  -> \033[0mTook "    << duration << " seconds\n\n";
 
 	// Print out the path between the pages
 	for (int page_id : target_path)
