@@ -54,20 +54,19 @@ int main(int argc, char* argv[])
 		std::clock_t start = std::clock();
 
 		std::ifstream page_links_file(argv[2]);
-		std::string links;
+		std::string link_id;
 
-		while (std::getline(page_links_file, links))
+		int current_link = 0;
+
+		while (page_links_file >> link_id)
 		{
-			int split_at = links.find(':');
-			int link_id = atoi(links.substr(0, split_at).c_str());
-			links = links.substr(split_at + 2);
-
-			std::stringstream stream_links(links);
-			int target_id;
-
-			while (stream_links >> target_id)
+			if (link_id.back() == ':')
 			{
-				page_links[link_id].push_back(target_id);
+				current_link = atoi(link_id.c_str());
+			}
+			else
+			{
+				page_links[current_link].push_back(atoi(link_id.c_str()));
 			}
 		}
 
