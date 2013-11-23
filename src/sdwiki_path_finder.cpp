@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <sys/time.h>
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -6,7 +7,6 @@
 #include <deque>
 #include <unordered_map>
 #include <algorithm>
-#include <ctime>
 #include <omp.h>
 
 // Typedef for our primary data types
@@ -201,10 +201,13 @@ int main(int argc, char* argv[])
 	std::cout << "\033[92m==>\033[0m Reading in page titles as a vector & map\n";
 
 	{
-		std::clock_t start = std::clock();
-		int total = load_page_titles(std::string(argv[1]), pages, page_ids);
-		double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
+		struct timeval start, end;
 
+		gettimeofday(&start, 0);
+		int total = load_page_titles(std::string(argv[1]), pages, page_ids);
+		gettimeofday(&end, 0);
+
+		double duration = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
 		std::cout << "\033[94m  -> \033[0mRead in " << total    << " page titles\n";
 		std::cout << "\033[94m  -> \033[0mTook "    << duration << " seconds\n";
 	}
@@ -213,10 +216,13 @@ int main(int argc, char* argv[])
 	std::cout << "\033[92m==>\033[0m Reading in page links as a map\n";
 
 	{
-		std::clock_t start = std::clock();
-		int total = load_page_links(std::string(argv[2]), page_links);
-		double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
+		struct timeval start, end;
 
+		gettimeofday(&start, 0);
+		int total = load_page_links(std::string(argv[2]), page_links);
+		gettimeofday(&end, 0);
+
+		double duration = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
 		std::cout << "\033[94m  -> \033[0mRead in " << total    << " page links\n";
 		std::cout << "\033[94m  -> \033[0mTook "    << duration << " seconds\n";
 	}
@@ -234,10 +240,13 @@ int main(int argc, char* argv[])
 
 	std::vector<int> target_path;
 
-	std::clock_t start = std::clock();
-	target_path = path_between_pages(page_links, start_id, target_id);
-	double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
+	struct timeval start, end;
 
+	gettimeofday(&start, 0);
+	target_path = path_between_pages(page_links, start_id, target_id);
+	gettimeofday(&end, 0);
+
+	double duration = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
 	std::cout << "\033[94m  -> \033[0mTook "    << duration << " seconds\n\n";
 
 	// Print out the path between the pages
