@@ -136,5 +136,24 @@ int main(int argc, char* argv[])
 		std::cout << "\033[94m  -> \033[0mFound path in " << duration << " seconds\n";
 	}
 
+	// Insert the path between the start and target into a vector
+	std::vector<int> target_path;
+	int current = target_id;
+
+	do
+	{
+		target_path.push_back(current);
+	}
+	while ((current = parent_links[current]) != -1);
+
+	// Reverse the target path list to be in proper order
+	std::reverse(target_path.begin(), target_path.end());
+
+	// Print out the path between the pages
+	for (int page_id : target_path)
+	{
+		std::cout << " * " << pages[page_id] << '\n';
+	}
+
 	return 0;
 }
