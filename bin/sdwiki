@@ -29,7 +29,8 @@ target_request = urllib.request.urlopen(SEARCH_URL + search_query)
 target_title   = json.loads(target_request.read().decode('utf8'))[1][0].replace(' ', '_')
 
 # Start up the C program to do the search
-print("Searching {} → {}\n".format(start_title, target_title))
+print("")
+print("Searching \033[92m{}\033[0m → \033[94m{}\033[0m\n".format(start_title, target_title))
 
 # Determine the root of the project
 root_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
