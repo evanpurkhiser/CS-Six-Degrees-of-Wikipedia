@@ -74,12 +74,15 @@ int main(int argc, char* argv[])
 		std::cout << "\033[94m  -> \033[0mtook " << duration << " seconds\n";
 	}
 
-	int page_id = page_ids[argv[3]];
-	std::cout << argv[3] << "(" << page_id << ") links to:\n";
+	std::cout << "\033[92m==>\033[0m Begining BFS on Wikipedia graph\n";
 
-	for (int i : page_links[page_id])
+	// Get the ID's of the start and target nodes
+	int start_id  = page_ids[argv[3]],
+	    target_id = page_ids[argv[4]];
+
+	if (start_id == target_id)
 	{
-		std::cout << " * " << pages[i] << std::endl;
+		std::cout << "\n\033[92mNo clicks required. The article is the same!\n";
 	}
 
 	return 0;
