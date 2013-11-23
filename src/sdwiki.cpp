@@ -205,6 +205,15 @@ std::string search_for_page(const std::string &py_searcher_bin, const std::strin
 	return page_name;
 }
 
+/* Kick off the main process:
+ *
+ *  1. Load in all of the wikipedia pages and page links into memory as a vector
+ *     and hash map. Do this in parallel if possible
+ *  2. Begin reading user input for what pages they would like to path find
+ *  3. Use an external python script to get the page names from wikis search
+ *  4. Path find using the BFS algorithm (again, in parallel)
+ *  5. Repeat 2
+ */
 int main(int argc, char* argv[])
 {
 	// Used to store a list of page titles. Each index represents a page title
