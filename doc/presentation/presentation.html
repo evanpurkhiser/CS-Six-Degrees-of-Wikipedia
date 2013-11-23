@@ -6,12 +6,19 @@
 		<link href="http://cdn.jsdelivr.net/reveal.js/2.5.0/css/reveal.css" rel="stylesheet" type="text/css" />
 		<link href="http://cdn.jsdelivr.net/reveal.js/2.5.0/css/theme/simple.css" rel="stylesheet" type="text/css" />
 		<style>
-		  .reveal  section img {
-		    border: none;
-			box-shadow: none;
-			-webkkit-box-shadow: none;
-			-mox-box-shadow: none;
-		  }
+			.reveal  section img {
+				border: none;
+				box-shadow: none;
+				-webkkit-box-shadow: none;
+				-mox-box-shadow: none;
+			}
+			.timer {
+				position: absolute;
+				top: 15px;
+				right: 15px;
+				font-size: 20px;
+				color: #aaa;
+			}
 		</style>
 	</head>
 	<body>
@@ -19,7 +26,7 @@
 			<div class="slides">
 				<section data-markdown="presentation.md" data-separator="^\n\n"></section>
 			</div>
-			<div class="slidenumber"></div>
+			<div class="timer"></div>
 		</div>
 		<script type="text/javascript" src="http://cdn.jsdelivr.net/headjs/0.99/head.min.js"></script>
 		<script type="text/javascript" src="http://cdn.jsdelivr.net/reveal.js/2.5.0/js/reveal.js"></script>
@@ -37,6 +44,33 @@
 					{ src: "http://cdn.jsdelivr.net/reveal.js/2.5.0/plugin/markdown/markdown.js" },
 				],
 			});
+
+			var startTime = new Date;
+
+			function pad(num, size) {
+				var s = num + '';
+				while (s.length < size) s = '0' + s;
+				return s;
+			}
+
+			setInterval(function()
+			{
+				var time = (new Date - startTime) / 1000;
+
+				var min = Math.floor(time / 60);
+				var sec = Math.floor(time % 60);
+				document.querySelector('.timer').innerHTML = pad(min, 2) + ':' + pad(sec, 2)
+			},
+			1000);
+
+			Reveal.addEventListener('slidechanged', function(event)
+			{
+				if (event.indexh == 1)
+				{
+					startTime = new Date;
+				}
+			});
+
 		</script>
 	</body>
 </html>
