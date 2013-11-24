@@ -68,14 +68,17 @@ int load_page_links(const std::string &file_path, page_links_t &page_links)
 
 	while (page_links_file >> link_id)
 	{
+		int id = atoi(link_id.c_str());
+
 		if (link_id.back() == ':')
 		{
-			current_link = atoi(link_id.c_str());
+			current_link = id;
+			page_links[current_link].reserve(50);
 		}
 		else
 		{
-			page_links[current_link].push_back(atoi(link_id.c_str()));
-			total_links++;
+			page_links[current_link].push_back(id);
+			++total_links;
 		}
 	}
 
@@ -245,6 +248,11 @@ int main(int argc, char* argv[])
 
 	// Used to store a list of page_ids that a given page_id links to
 	page_links_t page_links;
+
+	// There are going to be about 6 millon pages
+	pages.reserve(6000000);
+	page_ids.reserve(6000000);
+	page_links.reserve(6000000);
 
 	std::cout << "Welcome to Six-Degrees-of-Wikipedia path finder\n"
 	          << "Please while we load Wikipedia into memory.\n\n";
