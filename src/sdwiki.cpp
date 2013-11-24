@@ -205,6 +205,27 @@ std::string search_for_page(const std::string &py_searcher_bin, const std::strin
 	return page_name;
 }
 
+std::string pretty_print_path(const std::vector<int> &path_ids, const pages_t &pages)
+{
+	std::string path = "";
+	int left_padding = 2;
+
+	for (int page_id : path_ids)
+	{
+		std::string page_title = pages[page_id];
+		std::string left_pad   = std::string(left_padding, ' ');
+
+		path += left_pad + page_title + '\n';
+
+		if (pages[page_id] != pages[path_ids.size() - 1])
+		{
+			path += left_pad + "↓\n";
+		}
+	}
+
+	return path;
+}
+
 /* Kick off the main process:
  *
  *  1. Load in all of the wikipedia pages and page links into memory as a vector
@@ -276,8 +297,23 @@ int main(int argc, char* argv[])
 		std::getline(std::cin, target_page);
 
 		// Use the the wiki_search.py script to lookup the wikipedia article name
+		std::cout << "\n\033[32m==>\033[0m Looking up pages through Wikipedia search API\n";
+
 		start_page  = search_for_page(base_path + "bin/wiki_search.py", start_page);
 		target_page = search_for_page(base_path + "bin/wiki_search.py", target_page);
+
+		// Ensure both pages exist
+		if (start_page == "")
+		{
+			std::cout << "\033[31m==>\033[0m Start page is not a valid Wikipedia page\n\n";
+			continue;
+		}
+
+		if (target_page == "")
+		{
+			std::cout << "\033[31m==>\033[0m Target page is not a valid Wikipedia page\n\n";
+			continue;
+		}
 
 		// Remove newline from page names
 		start_page.pop_back();
@@ -287,21 +323,8 @@ int main(int argc, char* argv[])
 		int start_id  = page_ids[start_page],
 			target_id = page_ids[target_page];
 
-		// Ensure both pages exist
-		if ( ! start_id)
-		{
-			std::cout << "Start page is not a valid Wikipedia page";
-			continue;
-		}
-
-		if ( ! target_id)
-		{
-			std::cout << "Start page is not a valid Wikipedia page";
-			continue;
-		}
-
 		// Begin search
-		std::cout << "\n\033[32m==>\033[0m Finding path from \033[35m"
+		std::cout << "\033[32m==>\033[0m Finding path from \033[35m"
 		          << start_page  << "\033[0m → \033[34m"
 		          << target_page << "\033[0m\n";
 
@@ -313,13 +336,16 @@ int main(int argc, char* argv[])
 		gettimeofday(&end, 0);
 
 		double duration = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
-		std::cout << "\033[34m  -> \033[0mTook "    << duration << " seconds\n\n";
+		std::cout << "\033[34m  -> \033[0mFound path in \033[32m" << target_path.size() -1  << " clicks\033[0m\n";
+		std::cout << "\033[34m  -> \033[0mTook " << duration << " seconds\n\n";
 
-		// Print out the path between the pages
+		// Pretty print the page path
 		for (int page_id : target_path)
 		{
-			std::cout << " * " << pages[page_id] << '\n';
+			std::cout << "   \033[34m↓\033[0m " << pages[page_id] << "\n";
 		}
+
+		std::cout << '\n';
 	}
 
 	return 0;
