@@ -254,34 +254,37 @@ int main(int argc, char* argv[])
 	readlink("/proc/self/exe", path_buffer, sizeof(path_buffer) - 1);
 	std::string base_path = std::string(dirname(path_buffer)) + "/../";
 
-	// Load in all page titles into a vector
-	std::cout << "\033[32m==>\033[0m Reading in page titles as a vector & map\n";
 
+	#pragma omp parallel sections
 	{
-		struct timeval start, end;
+		// Load in all data, in parallel
+		std::cout << "\033[32m==>\033[0m Loading in page titles and page links\n";
 
-		gettimeofday(&start, 0);
-		int total = load_page_titles(base_path + "data/titles-sorted", pages, page_ids);
-		gettimeofday(&end, 0);
+		#pragma omp section
+		{
+			struct timeval start, end;
 
-		double duration = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
-		std::cout << "\033[34m  -> \033[0mRead in " << total    << " page titles\n";
-		std::cout << "\033[34m  -> \033[0mTook "    << duration << " seconds\n";
-	}
+			gettimeofday(&start, 0);
+			int total = load_page_titles(base_path + "data/titles-sorted", pages, page_ids);
+			gettimeofday(&end, 0);
 
-	// Load in all page links into a hash map
-	std::cout << "\033[32m==>\033[0m Reading in page links as a map\n";
+			double duration = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
+			std::cout << "\033[34m  -> \033[0mRead in " << total    << " page titles\n";
+			std::cout << "\033[34m  -> \033[0mTook "    << duration << " seconds\n";
+		}
 
-	{
-		struct timeval start, end;
+		#pragma omp section
+		{
+			struct timeval start, end;
 
-		gettimeofday(&start, 0);
-		int total = load_page_links(base_path + "data/links-simple-sorted", page_links);
-		gettimeofday(&end, 0);
+			gettimeofday(&start, 0);
+			int total = load_page_links(base_path + "data/links-simple-sorted", page_links);
+			gettimeofday(&end, 0);
 
-		double duration = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
-		std::cout << "\033[34m  -> \033[0mRead in " << total    << " page links\n";
-		std::cout << "\033[34m  -> \033[0mTook "    << duration << " seconds\n";
+			double duration = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
+			std::cout << "\033[34m  -> \033[0mRead in " << total    << " page links\n";
+			std::cout << "\033[34m  -> \033[0mTook "    << duration << " seconds\n";
+		}
 	}
 
 	std::cout << "\033[32m==>\033[0m Wikipedia graph loaded! Ready to path find!\n\n";
