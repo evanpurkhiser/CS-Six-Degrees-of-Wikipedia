@@ -41,7 +41,7 @@ int load_page_titles(const std::string &file_path, pages_t &pages, page_ids_t &p
 	while (std::getline(page_titles_file, page_name))
 	{
 		pages.push_back(page_name);
-		page_ids[page_name] = index++;
+		page_ids.insert({page_name, index++});
 	}
 
 	return index - 1;
