@@ -180,6 +180,15 @@ for (int i = 0; i < lines_to_parse; ++i)
 ### Total Boot Time: 12 seconds
 
 
+## User Input: Page names
+
+ * Can't just accept page names strings
+ * Must be a valid wikipedia article identifier
+ * Query the Wikipedia API wtih a python script
+ * Searches using input and returns the first result
+ * Sometimes results not what we want (C++ is Canada?)
+
+
 ## Constructing the graph
 
 
