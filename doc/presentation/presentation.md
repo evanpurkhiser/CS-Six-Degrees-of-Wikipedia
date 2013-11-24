@@ -97,6 +97,89 @@ At this point I had already spent too much time extracting data. Better to just
 use it than keep trying to get current data in the format I want.
 
 
+# The program
+
+
+ * Written in C++11
+ * Uses OpenMP for parallizing sections of code
+ * Uses an external python script to search Wikipedia page names from a seach
+   term
+ * Interactive console type application
+
+
+## Loading in the Data
+
+
+### Step 1: Reading page titles
+
+ * The line number represents the `page_id`
+ * Read all titles into a `std::vector<std::string>`
+ * Took about 5 seconds
+ * Was able to optimize this by reserving ~6 million elements
+ * Now it takes ~3 seconds
+ * Not paralizable
+
+
+```cpp
+std::ifstream page_titles_file(file_path);
+std::string page_name;
+
+int index = 1;
+
+while (std::getline(page_titles_file, page_name))
+{
+	pages.push_back(page_name);
+	page_ids.insert({page_name, index++});
+}
+```
+
+
+## Step 2: Reading in page links
+
+ * Each line represents a page and it's links
+ * The first number is the `page_id` followed by a "`:`"
+ * All numbers after are `page_id`s it links too
+ * The link graph is stored into a  `std::unordered_map<int, std::vector<int>>`
+ * Original loading logic took ~28 seconds
+
+
+### We can do better...
+
+ * Read all lines into a `std::vector<std::string>`
+ * `#pragma omp parallel for`
+ * Do work to extract the `page_id` and create a vector of all `page_id`s it
+   links to
+ * Enforce critical section on hash map inserts
+ * Much faster. Takes ~9 seconds utilizing 8 cores
+
+
+```cpp
+#pragma omp parallel for reduction(+:total_links)
+for (int i = 0; i < lines_to_parse; ++i)
+{
+	std::string line = intermediate[i];
+	int page_id = atoi(line.c_str());
+
+	// Remove the page_id, leaving only the links
+	line.erase(0, line.find(':') + 1);
+
+	std::istringstream line_stream(line);
+
+	// Construct array from list of page links
+	std::vector<int> links((std::istream_iterator<int>(line_stream)),
+			std::istream_iterator<int>());
+
+	total_links += links.size();
+
+	#pragma omp critical
+	page_links.insert({page_id, links});
+}
+```
+
+
+### Total Boot Time: 12 seconds
+
+
 ## Constructing the graph
 
 
