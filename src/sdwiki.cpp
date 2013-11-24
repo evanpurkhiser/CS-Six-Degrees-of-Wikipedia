@@ -352,6 +352,12 @@ int main(int argc, char* argv[])
 		target_path = path_between_pages(page_links, start_id, target_id);
 		gettimeofday(&end, 0);
 
+		if (target_path.empty())
+		{
+			std::cout << "\033[31m==>\033[0m Unable to find path!\n\n";
+			continue;
+		}
+
 		double duration = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
 		std::cout << "\033[34m  -> \033[0mFound path in \033[32m" << target_path.size() -1  << " clicks\033[0m\n";
 		std::cout << "\033[34m  -> \033[0mTook " << duration << " seconds\n\n";
