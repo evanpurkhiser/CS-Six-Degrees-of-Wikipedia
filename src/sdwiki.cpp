@@ -254,6 +254,8 @@ int main(int argc, char* argv[])
 	readlink("/proc/self/exe", path_buffer, sizeof(path_buffer) - 1);
 	std::string base_path = std::string(dirname(path_buffer)) + "/../";
 
+	struct timeval boot_start, boot_end;
+	gettimeofday(&boot_start, 0);
 
 	#pragma omp parallel sections
 	{
@@ -287,7 +289,11 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	std::cout << "\033[32m==>\033[0m Wikipedia graph loaded! Ready to path find!\n\n";
+	gettimeofday(&boot_end, 0);
+	double duration = ((boot_end.tv_sec - boot_start.tv_sec) * 1000000u
+		+ boot_end.tv_usec - boot_start.tv_usec) / 1.e6;
+
+	std::cout << "\033[32m==>\033[0m Wikipedia graph loaded in " << duration << " seconds. Ready to path find!\n\n";
 
 	while (true)
 	{
