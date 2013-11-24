@@ -36,7 +36,7 @@ different tables as SQL dumps. The two tables we are interested in are the
 ### `pages`
 
  * Contains various meta-data about Wikipedia pages
- * Includes a `page_namespace`. Name space `0` includes all 'real' wikipedia
+ * Includes a `page_namespace`. Name space `0` includes all 'real' Wikipedia
    articles (not Talk pages, Discussion, etc).
  * Also includes `page_id` and `page_title`
  * Gzipped file is only 0.9Gb
@@ -101,8 +101,8 @@ use it than keep trying to get current data in the format I want.
 
 
  * Written in C++11
- * Uses OpenMP for parallizing sections of code
- * Uses an external python script to search Wikipedia page names from a seach
+ * Uses OpenMP for paralyzing sections of code
+ * Uses an external python script to search Wikipedia page names from a search
    term
  * Interactive console type application
 
@@ -117,7 +117,7 @@ use it than keep trying to get current data in the format I want.
  * Took about 5 seconds
  * Was able to optimize this by reserving ~6 million elements
  * Now it takes ~3 seconds
- * Not paralizable
+ * Not paralyzable
 
 
 ```cpp
@@ -183,8 +183,8 @@ for (int i = 0; i < lines_to_parse; ++i)
 ## User Input: Page names
 
  * Can't just accept page names strings
- * Must be a valid wikipedia article identifier
- * Query the Wikipedia API wtih a python script
+ * Must be a valid Wikipedia article identifier
+ * Query the Wikipedia API with a python script
  * Searches using input and returns the first result
  * Sometimes results not what we want (C++ is Canada?)
 
