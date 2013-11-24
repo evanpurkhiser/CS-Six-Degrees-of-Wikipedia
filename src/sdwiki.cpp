@@ -15,7 +15,7 @@
 // Typedef for our primary data types
 typedef std::vector<std::string> pages_t;
 typedef std::unordered_map<std::string, int> page_ids_t;
-typedef std::unordered_map<int,std::vector<int>> page_links_t;
+typedef std::unordered_map<int, std::vector<int>> page_links_t;
 
 /* Load in the page titles and page ids from a file.
  *
