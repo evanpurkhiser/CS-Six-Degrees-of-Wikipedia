@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <iterator>
 #include <fstream>
 #include <vector>
 #include <deque>
@@ -61,25 +62,42 @@ int load_page_titles(const std::string &file_path, pages_t &pages, page_ids_t &p
 int load_page_links(const std::string &file_path, page_links_t &page_links)
 {
 	std::ifstream page_links_file(file_path);
-	std::string link_id;
+	std::string links;
 
-	int current_link = 0;
-	int total_links  = 0;
+	int total_links = 0;
 
-	while (page_links_file >> link_id)
+	std::vector<std::string> intermediate;
+
+	while (std::getline(page_links_file, links))
 	{
-		int id = atoi(link_id.c_str());
+		intermediate.push_back(links);
+	}
 
-		if (link_id.back() == ':')
-		{
-			current_link = id;
-			page_links[current_link].reserve(50);
-		}
-		else
-		{
-			page_links[current_link].push_back(id);
-			++total_links;
-		}
+	int lines_to_parse = intermediate.size();
+
+	#pragma omp parallel for reduction(+:total_links)
+	for (int i = 0; i < lines_to_parse; ++i)
+	{
+		// Remove the semicolon
+		std::string line = intermediate[i];
+
+		// Get the page we're inserting links to. Calling atoi will ignore
+		// everything after the ':'
+		int page_id = atoi(line.c_str());
+
+		// Remove the page_id, leaving only the links
+		line.erase(0, line.find(':') + 1);
+
+		std::istringstream line_stream(line);
+
+		// Construct array from list of page links
+		std::vector<int> links((std::istream_iterator<int>(line_stream)),
+				std::istream_iterator<int>());
+
+		total_links += links.size();
+
+		#pragma omp critical
+		page_links.insert({page_id, links});
 	}
 
 	return total_links;
@@ -264,6 +282,8 @@ int main(int argc, char* argv[])
 
 	struct timeval boot_start, boot_end;
 	gettimeofday(&boot_start, 0);
+
+	omp_set_nested(1);
 
 	#pragma omp parallel sections
 	{
