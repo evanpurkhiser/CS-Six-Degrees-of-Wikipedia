@@ -5,6 +5,7 @@
 		<title>Presentation</title>
 		<link href="http://cdn.jsdelivr.net/reveal.js/2.5.0/css/reveal.css" rel="stylesheet" type="text/css" />
 		<link href="http://cdn.jsdelivr.net/reveal.js/2.5.0/css/theme/simple.css" rel="stylesheet" type="text/css" />
+		<link href="//cdn.jsdelivr.net/highlight.js/7.3b/styles/github.min.css" rel="stylesheet" type="text/css" />
 		<style>
 			.reveal  section img {
 				border: none;
@@ -18,6 +19,9 @@
 				right: 15px;
 				font-size: 20px;
 				color: #aaa;
+			}
+			.reveal pre code {
+				max-height: none;
 			}
 		</style>
 	</head>
@@ -42,6 +46,12 @@
 				dependencies: [
 					{ src: "http://cdn.jsdelivr.net/reveal.js/2.5.0/plugin/markdown/marked.js" },
 					{ src: "http://cdn.jsdelivr.net/reveal.js/2.5.0/plugin/markdown/markdown.js" },
+
+					{
+						src: "http://cdn.jsdelivr.net/reveal.js/2.5.0/plugin/highlight/highlight.js",
+						async: true,
+						callback: function() { hljs.initHighlightingOnLoad(); }
+					},
 				],
 			});
 
