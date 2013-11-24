@@ -189,10 +189,38 @@ for (int i = 0; i < lines_to_parse; ++i)
  * Sometimes results not what we want (C++ is Canada?)
 
 
-## Constructing the graph
+## Searching the Graph
+
+ * We have a directed unweighted graph
+ * Use [Breadth First Search](http://en.wikipedia.org/wiki/Breadth-first_search)
+   to find the path between each node
+ * Keep track of parent nodes when traversing
+ * Stop once we've found the `target_page_id`
 
 
-## Shortest Path Search
+### Breadth First Search
+
+![BFS
+Animation](http://upload.wikimedia.org/wikipedia/commons/5/5d/Breadth-First-Search-Algorithm.gif)
+
+
+### Parallizing BFS
+
+ * Paralyze the loop over each queued node
+ * Large critical section due to checking if the path has been found in another
+   thread and for pushing the child nodes onto the queue
+ * Actually slower than normal version version
+
+
+## Timing
+
+ * Best case the search is quite faster
+ * Worst case can take up to 30 seconds to traverse through all 106 million edges
+   to find the target
+ * Usually pretty fast. It is called _six degrees_ for a reason
+
+
+# Demo Time!
 
 
 Slides and Code available on GitHub
