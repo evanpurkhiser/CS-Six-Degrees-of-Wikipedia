@@ -313,6 +313,9 @@ int main(int argc, char* argv[])
 		std::cout << "Target Wikipedia Page: ";
 		std::getline(std::cin, target_page);
 
+		// Test for exit
+		if (std::cin.eof()) break;
+
 		// Use the the wiki_search.py script to lookup the wikipedia article name
 		std::cout << "\n\033[32m==>\033[0m Looking up pages through Wikipedia search API\n";
 
