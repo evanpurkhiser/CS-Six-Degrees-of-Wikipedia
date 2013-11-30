@@ -26,10 +26,10 @@ two articles and find the distance between them went as follows
 
  1. Collect data from Wikipedia that links articles together.
 
- 2. Transform the data into a easily parsable and machine-readable format use to
-    construct the directed unweighted graph of articles. This includes a data
-    file containing a list of article titles and article IDs, as well as a data
-    file including article ID's and the article ID's they link to.
+ 2. Transform the data into a easily parsable and machine-readable format used
+	to construct the directed unweighted graph of articles. This includes a
+	data file containing a list of article titles and article IDs, as well as a
+	data file including article ID's and the article ID's they link to.
 
  3. Construct a program in C++11 that will use the collected data to allow the
     user to find the distance between two articles. A high level overview of how
@@ -57,7 +57,7 @@ two articles and find the distance between them went as follows
 
 	5. Output the path and return to step 3.
 
-We will be using OpenMP as the parallelization framework through the C++11
+We will be using OpenMP as the parallelization framework throughout the C++11
 program to provide us with relatively quick and easy parallelization.
 
 ### Collecting data from Wikipedia
@@ -99,7 +99,7 @@ following format:
 Where the first number in the line is the ID of that given page followed by a
 space then the Wikipedia article title (which is gaunted to have no spaces as
 described in the [Wikipedia
-manual](http://www.mediawiki.org/wiki/Manual:Page_title).
+manual](http://www.mediawiki.org/wiki/Manual:Page_title)).
 
 Since the `pages` database dump contains multiple SQL `INSERT INTO` statements,
 each containing multiple row inserts would need to be parsed out this data using
@@ -242,10 +242,10 @@ For most other articles the search will take just microseconds.
 # Discussion
 
 During the development of the `sdwiki` client research was done looking into
-different algorithms that would be a best fit for searching an undirected
-weighted graph to find the shortest path between two nodes. Some tools were
-found that are able to do optimized BFS against a large dataset using tools
-such as
+different algorithms that would be a best fit for searching a directed
+unweighted graph to find the shortest path between two nodes. Some techniques
+were found that are able to do optimized BFS against a large dataset using
+tools such as
 [hadoop](http://www.johnandcailin.com/blog/cailin/breadth-first-graph-search-using-iterative-map-reduce-algorithm)
 however no algorithms other than BFS were found that could be efficiently used
 to search a graph in parallel.
@@ -255,8 +255,8 @@ to search a graph in parallel.
  * It would be nice to go back and focus on Wikipedia data acquisition and write
    an efficient tool to extract the page links and page titles into the formats
    used for the `sdwiki` tool. Instead of using Python to do the parsing for
-   large files it would be much better to use C++ or even C which would have a
-   much better time handling the large files.
+   large files it would be far better to use C++ or even C which would have a
+   much easier time handling the large files.
 
  * Perhaps a more optimal file format could be used for storing the page links
    other than the format described previously. Having full control over this
@@ -268,8 +268,8 @@ to search a graph in parallel.
    the algorithm that could be used to actually improve performance when run in
    parallel.
 
-Overall I found this project to be very fun and interesting to work on. I'm glad
-I picked a problem that I could related to instead of simply implementing a
+Overall I found this project to be very fun and interesting to work on. I'm
+glad I picked a problem that I could relate to instead of simply implementing a
 algorithm that would be run on various sets of data.
 
 # Conclusion
