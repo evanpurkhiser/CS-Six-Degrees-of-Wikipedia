@@ -79,7 +79,7 @@ format that I was looking for.
  * page-titles file is only 107Mb
  * Excludes all uninteresting pages (Talk, Discussion, etc)
  * [Available for download from his
-   webpage](http://haselgrove.id.au/wikipedia.ht)
+   webpage](http://haselgrove.id.au/wikipedia.htm)
 
 
 ## The downside is...
