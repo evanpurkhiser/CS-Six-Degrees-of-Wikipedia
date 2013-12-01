@@ -239,6 +239,8 @@ will in general take longer to search for in the graph.
 
 For most other articles the search will take just microseconds.
 
+\pagebreak
+
 # Discussion
 
 During the development of the `sdwiki` client research was done looking into
