@@ -285,3 +285,18 @@ In the end we were able to very successful parallelize the loading of data into
 memory. However, parallelizing the BFS algorithm ended in failure. While the
 algorithm certainly did work in parallel, it turned out to be slower due to the
 OpenMP overhead.
+
+\pagebreak
+
+# Exam Questions
+
+ 1. What is the name of the idea of connections between any two entities? This
+	idea can be applied to Wikipedia. A: six degrees of separation.
+
+ 2. Does Wikipedia offer a simple way to extract a link graph between articles?
+	A: Yes they offer a database dump of page titles. Alternatively, no the
+	offered file doesent contain enough information to be able to simply
+	extract the graph.
+
+ 3. Can openmp be used to improve bfs search time? A: No, the critical section
+	overhead is too high.
