@@ -165,7 +165,7 @@ std::vector<int> path_between_pages(page_links_t &page_links,
 		for (int i = 0; i < available_nodes; ++i)
 		{
 			// Since we can't break out of parallelize loops we just need to
-			// finish off what evers left by continuing through them all
+			// finish off what ever is left by continuing through them all
 			#pragma omp flush (found_target)
 			if (found_target) continue;
 
